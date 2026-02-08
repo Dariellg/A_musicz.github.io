@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📁 Subir Archivos</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="https://unpkg.com/vexflow@4.0.1/build/cjs/vexflow.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            padding-bottom: 50px;
+        }
+
+        .panel {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            color: #444;
+            font-size: 1.4rem;
+        }
+
+        /* Zona de Subida */
+        .upload-zone {
+            border: 4px dashed #667eea;
+            border-radius: 15px;
+            padding: 60px 30px;
+            text-align: center;
+            margin: 20px 0;
+            background: #f8f9ff;
+            cursor: pointer;
+            transition: all 0.3s;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .upload-zone.dragover {
+            background: #667eea15;
+            border-color: #4CAF50;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            color: #667eea;
+        }
+
+        .browse-btn {
+            background: #667eea;
+            color: white;
+            padding: 15px 40px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            margin: 20px 0;
+            border: none;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+        }
+
+        .browse-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-2px);
+        }
+
+        /* Información del Archivo */
+        .file-info-panel {
+            background: #e8f5e9;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #4CAF50;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .info-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+
+        /* Progreso de Análisis */
+        .progress-container {
+            margin: 25px 0;
+            display: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.5s;
+            border-radius: 10px;
+        }
+
+        /* Resultados del Análisis */
+        .results-panel {
+            background: #e3f2fd;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            border-left: 5px solid #2196F3;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .result-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        /* Lista de Notas */
+        .notes-list-container {
+            max-height: 350px;
+            overflow-y: auto;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .notes-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .note-tag {
+            background: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 3px solid #2196F3;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Controles */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 25px 0;
+        }
+
+        .control-btn {
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-size: 1rem;
+        }
+
+        .btn-analyze {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-success {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        /* Configuración */
+        .settings-panel {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        .setting-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        /* Partitura */
+        .score-container {
+            width: 100%;
+            min-height: 450px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: auto;
+            padding: 25px;
+            margin-top: 20px;
+        }
+
+        #scoreCanvas {
+            width: 100%;
+            min-height: 350px;
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 15px;
+                gap: 20px;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+
+            .upload-zone {
+                padding: 40px 20px;
+                min-height: 200px;
+            }
+
+            .upload-icon {
+                font-size: 3rem;
+            }
+
+            .info-grid,
+            .results-grid,
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .setting-row {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .browse-btn {
+                width: 100%;
+                padding: 12px;
+            }
+
+            .note-tag {
+                padding: 10px 15px;
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="page-header">
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <a href="index.html" style="color: white; text-decoration: none; font-size: 1.3rem;">←</a>
+            <h1 style="font-size: 1.4rem; display: flex; align-items: center; gap: 10px;">
+                <span>📁</span> Subir Archivos de Audio
+            </h1>
+        </div>
+        <div id="fileStatus"
+            style="background: #e8f5e9; color: #4CAF50; padding: 8px 20px; border-radius: 25px; font-weight: bold;">
+            Esperando archivo
+        </div>
+    </header>
+
+    <!-- Contenido Principal -->
+    <main class="main-container">
+        <!-- Sección 1: Subida de Archivos -->
+        <section class="panel">
+            <h2 class="section-title">
+                <span>📁</span> Subir Archivo de Audio
+            </h2>
+
+            <p style="color: #666; margin-bottom: 20px; line-height: 1.6;">
+                Sube un archivo de audio (MP3, WAV, M4A, OGG) y nuestro sistema analizará automáticamente las notas
+                musicales para generar una partitura.
+            </p>
+
+            <div class="upload-zone" id="dropZone">
+                <div class="upload-icon">📁</div>
+                <h3 style="margin-bottom: 10px; color: #333;">Arrastra y suelta tu archivo aquí</h3>
+                <p style="color: #666; margin: 10px 0;">o</p>
+                <input type="file" id="fileInput" accept=".mp3,.wav,.m4a,.ogg,.flac" style="display: none;">
+                <button class="browse-btn" id="browseBtn">
+                    Buscar archivo en el equipo
+                </button>
+                <p style="color: #888; margin-top: 15px; font-size: 0.9rem;">
+                    Formatos soportados: MP3, WAV, M4A, OGG, FLAC (hasta 50MB)
+                </p>
+            </div>
+
+            <div class="file-info-panel" id="fileInfo" style="display: none;">
+                <h3 style="margin-bottom: 15px; color: #2e7d32;">📄 Archivo Cargado</h3>
+
+                <div class="info-grid">
+                    <div class="info-item">
+                        <div class="info-label">Nombre del archivo:</div>
+                        <div class="info-value" id="fileName">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Tamaño:</div>
+                        <div class="info-value" id="fileSize">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Duración:</div>
+                        <div class="info-value" id="fileDuration">-</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Tipo de archivo:</div>
+                        <div class="info-value" id="fileType">-</div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <label style="display: block; margin-bottom: 10px; font-weight: bold; color: #333;">
+                        🎵 Configuración de análisis:
+                    </label>
+                    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 8px; color: #555;">Instrumento:</label>
+                            <select id="instrumentSelect"
+                                style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #ddd;">
+                                <option value="auto">Detectar automáticamente</option>
+                                <option value="piano">Piano</option>
+                                <option value="guitar">Guitarra</option>
+                                <option value="violin">Violín</option>
+                                <option value="flute">Flauta</option>
+                                <option value="voice">Voz/Canto</option>
+                            </select>
+                        </div>
+
+                        <div style="flex: 1; min-width: 200px;">
+                            <label style="display: block; margin-bottom: 8px; color: #555;">Tipo de análisis:</label>
+                            <select id="analysisType"
+                                style="width: 100%; padding: 12px; border-radius: 8px; border: 2px solid #ddd;">
+                                <option value="fast">Análisis rápido</option>
+                                <option value="standard" selected>Análisis estándar</option>
+                                <option value="detailed">Análisis detallado</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="analyzeBtn" class="control-btn btn-analyze"
+                    style="width: 100%; margin-top: 25px; padding: 18px;">
+                    <span>🔍</span> Analizar Archivo de Audio
+                </button>
+            </div>
+
+            <div class="progress-container" id="progressContainer">
+                <h3 style="margin-bottom: 15px; color: #333;">Analizando archivo...</h3>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-top: 10px; color: #666;">
+                    <span id="progressText">0%</span>
+                    <span id="progressStatus">Iniciando análisis...</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección 2: Resultados del Análisis -->
+        <section class="panel" id="resultsSection" style="display: none;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 class="section-title" style="margin: 0;">
+                    <span>📊</span> Resultados del Análisis
+                </h2>
+                <button id="reanalyzeBtn" class="control-btn" style="background: #ff9800; color: white;">
+                    🔄 Analizar de nuevo
+                </button>
+            </div>
+
+            <div class="results-panel">
+                <div class="results-grid">
+                    <div class="result-item">
+                        <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Notas detectadas</div>
+                        <div style="font-size: 2rem; font-weight: bold; color: #2196F3;" id="notesDetected">0</div>
+                    </div>
+
+                    <div class="result-item">
+                        <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Instrumento detectado</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #2196F3;" id="instrumentDetected">-
+                        </div>
+                    </div>
+
+                    <div class="result-item">
+                        <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Tempo estimado</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #2196F3;" id="estimatedTempo">- BPM
+                        </div>
+                    </div>
+
+                    <div class="result-item">
+                        <div style="font-size: 0.9rem; color: #666; margin-bottom: 5px;">Precisión</div>
+                        <div style="font-size: 1.5rem; font-weight: bold; color: #4CAF50;" id="analysisAccuracy">- %
+                        </div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 25px;">
+                    <h4 style="margin-bottom: 15px; color: #333;">🎼 Información adicional:</h4>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">
+                        <div style="background: white; padding: 15px; border-radius: 8px;">
+                            <div style="color: #666; font-size: 0.9rem;">Clave detectada:</div>
+                            <div style="font-weight: bold;" id="detectedClef">-</div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px;">
+                            <div style="color: #666; font-size: 0.9rem;">Escala principal:</div>
+                            <div style="font-weight: bold;" id="detectedScale">-</div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px;">
+                            <div style="color: #666; font-size: 0.9rem;">Tono principal:</div>
+                            <div style="font-weight: bold;" id="detectedKey">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <button id="generateScoreBtn" class="control-btn btn-success"
+                    style="width: 100%; margin-top: 30px; padding: 18px;">
+                    <span>🎵</span> Generar Partitura Completa
+                </button>
+            </div>
+        </section>
+
+        <!-- Sección 3: Notas Detectadas -->
+        <section class="panel" id="notesSection" style="display: none;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 class="section-title" style="margin: 0;">
+                    <span>📝</span> Notas Detectadas
+                </h2>
+                <div style="display: flex; gap: 10px;">
+                    <div style="background: #f0f0f0; padding: 8px 20px; border-radius: 25px; font-weight: bold;">
+                        <span id="totalNotesCount">0</span> notas
+                    </div>
+                </div>
+            </div>
+
+            <div class="notes-list-container">
+                <div class="notes-grid" id="notesGrid">
+                    <div style="text-align: center; color: #888; padding: 40px 20px; width: 100%;">
+                        <p style="font-size: 1.1rem; margin-bottom: 10px;">🎵 Sube y analiza un archivo para ver las
+                            notas</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-grid" style="margin-top: 25px;">
+                <button id="clearNotes" class="control-btn btn-danger" disabled>
+                    🗑️ Limpiar Notas
+                </button>
+                <button id="exportNotes" class="control-btn btn-primary" disabled>
+                    📋 Exportar Lista
+                </button>
+                <button id="playSequence" class="control-btn btn-success" disabled>
+                    ▶️ Reproducir Notas
+                </button>
+                <button id="editNotes" class="control-btn" style="background: #9c27b0; color: white;" disabled>
+                    ✏️ Editar Notas
+                </button>
+            </div>
+        </section>
+
+        <!-- Sección 4: Configuración -->
+        <section class="panel">
+            <h2 class="section-title">
+                <span>⚙️</span> Configuración de Análisis
+            </h2>
+
+            <div class="settings-panel">
+                <div class="setting-row">
+                    <label style="font-weight: bold; min-width: 150px;">Sensibilidad:</label>
+                    <div style="flex: 1; display: flex; align-items: center; gap: 15px;">
+                        <input type="range" id="analysisSensitivity" min="1" max="100" value="70" style="flex: 1;">
+                        <span id="sensitivityValue"
+                            style="font-weight: bold; font-size: 1.1rem; min-width: 50px;">70%</span>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <label style="font-weight: bold; min-width: 150px;">Resolución:</label>
+                    <select id="resolutionSelect"
+                        style="flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #ddd;">
+                        <option value="low">Baja (más rápido)</option>
+                        <option value="medium" selected>Media (equilibrado)</option>
+                        <option value="high">Alta (más preciso)</option>
+                    </select>
+                </div>
+
+                <div class="setting-row">
+                    <label style="font-weight: bold; min-width: 150px;">Umbral de silencio:</label>
+                    <div style="flex: 1; display: flex; align-items: center; gap: 15px;">
+                        <input type="range" id="silenceThreshold" min="1" max="100" value="20" style="flex: 1;">
+                        <span id="thresholdValue"
+                            style="font-weight: bold; font-size: 1.1rem; min-width: 50px;">20%</span>
+                    </div>
+                </div>
+
+                <div class="setting-row">
+                    <div style="display: flex; flex-direction: column; gap: 15px; width: 100%;">
+                        <label>
+                            <input type="checkbox" id="autoCorrectNotes" checked>
+                            Corregir notas automáticamente
+                        </label>
+                        <label>
+                            <input type="checkbox" id="detectChords">
+                            Detectar acordes automáticamente
+                        </label>
+                        <label>
+                            <input type="checkbox" id="exportMetadata">
+                            Incluir metadatos en la exportación
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                style="margin-top: 25px; padding: 20px; background: #fff3cd; border-radius: 12px; border-left: 4px solid #ffc107;">
+                <h3 style="margin-bottom: 10px; color: #856404;">⚠️ Limitaciones del análisis:</h3>
+                <ul style="list-style: none; color: #856404;">
+                    <li style="margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px;">
+                        <span>•</span> La precisión depende de la calidad del audio
+                    </li>
+                    <li style="margin-bottom: 8px; display: flex; align-items: flex-start; gap: 8px;">
+                        <span>•</span> Archivos con mucho ruido de fondo pueden afectar los resultados
+                    </li>
+                    <li style="display: flex; align-items: flex-start; gap: 8px;">
+                        <span>•</span> La detección polifónica (varias notas a la vez) tiene precisión limitada
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Sección 5: Partitura -->
+        <section class="panel" id="scoreSection" style="display: none;">
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+                <h2 class="section-title" style="margin: 0;">
+                    <span>📄</span> Partitura Generada
+                </h2>
+                <div class="score-controls" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <span style="font-size: 0.9em; color: #555; margin-right: 15px; align-self: center;">
+                        ℹ️ Doble clic en la partitura para editar
+                    </span>
+                    <button id="refreshScore" class="control-btn" style="background: #607d8b;" disabled>
+                        🔄 Actualizar
+                    </button>
+                    <button id="exportPDF" class="control-btn btn-primary" disabled>
+                        📥 Exportar PDF
+                    </button>
+                    <button id="exportMusicXML" class="control-btn" style="background: #ff9800; color: white;" disabled>
+                        🎵 Exportar MusicXML
+                    </button>
+                    <button id="exportScoreImage" class="control-btn btn-success" disabled>
+                        🖼️ Guardar Imagen
+                    </button>
+                </div>
+            </div>
+
+            <div class="score-container">
+                <canvas id="scoreCanvas"></canvas>
+            </div>
+
+            <div
+                style="display: flex; justify-content: space-between; margin-top: 20px; color: #666; font-size: 0.95rem; flex-wrap: wrap; gap: 20px;">
+                <div>
+                    <strong>Compases:</strong> <span id="measureCount">0</span>
+                </div>
+                <div>
+                    <strong>Clave:</strong> <span id="scoreClef">Sol</span>
+                </div>
+                <div>
+                    <strong>Tempo:</strong> <span id="scoreTempo">120</span> BPM
+                </div>
+                <div>
+                    <strong>Instrumento:</strong> <span id="scoreInstrument">-</span>
+                </div>
+                <div>
+                    <strong>Archivo:</strong> <span id="scoreFileName">-</span>
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 15px; margin-top: 25px; flex-wrap: wrap;">
+                <button id="editScore" class="control-btn" style="background: #9c27b0; color: white;" disabled>
+                    ✏️ Editar Partitura
+                </button>
+                <button id="printScore" class="control-btn" style="background: #607d8b; color: white;" disabled>
+                    🖨️ Imprimir
+                </button>
+                <button id="saveProject" class="control-btn btn-success" disabled>
+                    💾 Guardar Proyecto
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <script type="module" src="../js/archivo_m.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 Transforma Audio en Partitura</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        .app-container {
+            width: 100%;
+            max-width: 1200px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .app-title {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .app-subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            opacity: 0.9;
+            max-width: 700px;
+            line-height: 1.4;
+        }
+        
+        .modules {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            width: 100%;
+            margin-bottom: 40px;
+        }
+        
+        .module {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px 20px;
+            text-decoration: none;
+            color: white;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 220px;
+        }
+        
+        .module:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .module-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .module-title {
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+        
+        .module-desc {
+            font-size: 0.9rem;
+            opacity: 0.85;
+            line-height: 1.4;
+        }
+        
+        .footer {
+            margin-top: 20px;
+            opacity: 0.8;
+            font-size: 0.9rem;
+            text-align: center;
+            max-width: 800px;
+        }
+        
+        @media (max-width: 900px) {
+            .modules {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+                overflow-y: auto; /* Allow scrolling on mobile */
+                height: auto;     /* Remove fixed height constraint */
+                min-height: 100vh;
+                display: block;   /* Remove flex center for better scrolling */
+            }
+            
+            .app-container {
+                padding-top: 20px;
+                padding-bottom: 40px;
+            }
+
+            .app-title {
+                font-size: 2rem;
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .modules {
+                grid-template-columns: 1fr;
+                max-width: 100%; /* Use full width */
+            }
+            
+            .module {
+                min-height: 160px; /* Slightly smaller cards */
+                padding: 20px;
+            }
+
+            .module-icon {
+                font-size: 2.5rem; /* Resize icons */
+                margin-bottom: 10px;
+            }
+
+            .app-subtitle {
+                font-size: 1rem;
+                margin-bottom: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <h1 class="app-title">
+            <span>🎼</span>
+            Transforma Audio en Partitura
+        </h1>
+        
+        <p class="app-subtitle">
+            Convierte grabaciones en vivo, archivos de audio o melodías de piano 
+            en partituras musicales editables directamente en tu navegador.
+        </p>
+        
+        <div class="modules">
+            <!-- Micrófono -->
+            <a href="microfono.html" class="module">
+                <div class="module-icon">🎤</div>
+                <h2 class="module-title">Grabación en Vivo</h2>
+                <p class="module-desc">
+                    Graba desde el micrófono y detecta notas en tiempo real
+                </p>
+            </a>
+            
+            <!-- Piano -->
+            <a href="piano.html" class="module">
+                <div class="module-icon">🎹</div>
+                <h2 class="module-title">Piano Virtual</h2>
+                <p class="module-desc">
+                    Crea melodías con teclas interactivas
+                </p>
+            </a>
+            
+            <!-- Archivos -->
+            <a href="archivo.html" class="module">
+                <div class="module-icon">📁</div>
+                <h2 class="module-title">Subir Archivos</h2>
+                <p class="module-desc">
+                    Analiza MP3, WAV y otros formatos de audio
+                </p>
+            </a>
+        </div>
+        
+        <div class="footer">
+            <p>No requiere registro • Funciona en Chrome, Edge y Firefox • Usa auriculares para mejor calidad</p>
+        </div>
+    </div>
+</body>
+</html>

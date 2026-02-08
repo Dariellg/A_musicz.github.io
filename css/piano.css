@@ -1,0 +1,115 @@
+/* === PIANO COMPLETO (A0–C8) === */
+
+/* Contenedor general del piano */
+.piano-container {
+  background: #2c3e50;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 15px 0;
+  overflow-x: auto;
+}
+
+/* Fila de teclas: muchas teclas, scroll horizontal */
+.piano-keys {
+  display: flex;
+  position: relative;
+  /* importante para que las negras se basen en este contenedor */
+  height: 200px;
+  min-width: 1400px;
+}
+
+/* Teclas blancas */
+.white-key {
+  position: relative;
+  flex: 0 0 3.5rem;
+  /* Ancho fijo para evitar problemas de flex */
+  min-width: 3.5rem;
+  height: 14rem;
+  background: #ffffff;
+  border: 1px solid #c0c0c0;
+  border-radius: 0 0 6px 6px;
+  margin-right: 0;
+  /* Sin margen para que estén pegadas */
+  cursor: pointer;
+  box-sizing: border-box;
+  transition: background 0.1s, transform 0.1s;
+  z-index: 1;
+}
+
+.white-key:active,
+.white-key.key-playing {
+  background: #f0f0f0;
+  transform: translateY(2px);
+  box-shadow: inset 0 -5px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Teclas negras: superposición con márgenes negativos */
+.black-key {
+  position: relative;
+  flex: 0 0 2rem;
+  /* Ancho fijo */
+  min-width: 2rem;
+  height: 9rem;
+
+  /* Márgenes negativos para que no ocupen espacio en el flujo (width 2rem - 1rem - 1rem = 0) */
+  margin-left: -1rem;
+  margin-right: -1rem;
+
+  background: linear-gradient(to bottom, #333 0%, #000 100%);
+  border-radius: 0 0 4px 4px;
+  cursor: pointer;
+  z-index: 10;
+  /* Por encima de las blancas */
+  box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  transition: background 0.1s, transform 0.1s;
+}
+
+.black-key:active,
+.black-key.key-playing {
+  background: #222;
+  transform: translateY(2px);
+}
+
+/* Etiquetas de nota */
+.key-label {
+  position: absolute;
+  bottom: 8px;
+  width: 100%;
+  text-align: center;
+  font-size: 0.75rem;
+  font-weight: bold;
+  pointer-events: none;
+}
+
+.white-key .key-label {
+  color: #333333;
+}
+
+.black-key .key-label {
+  color: #ffffff;
+}
+
+/* Estado de tecla pulsada */
+.key-playing {
+  transform: translateY(4px);
+  background: #4ecdc4 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+/* Responsive básico */
+@media (max-width: 768px) {
+  .piano-keys {
+    height: 160px;
+    min-width: 1000px;
+  }
+
+  .white-key {
+    flex-basis: 35px;
+    min-width: 35px;
+    height: 150px;
+  }
+
+  .black-key {
+    height: 90px;
+  }
+}
